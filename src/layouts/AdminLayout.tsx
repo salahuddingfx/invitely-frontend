@@ -1,15 +1,25 @@
 import React from 'react';
-import { Link, useLocation, Outlet } from 'react-router-dom';
+import { Link, useLocation, Navigate } from 'react-router-dom';
+import { useAuthStore } from '../store/authStore';
 import {
   LayoutDashboard,
   Users,
   CreditCard,
-  Settings,
   ChevronLeft,
   Shield
 } from 'lucide-react';
 
-export const AdminLayout: React.FC = () => {
+interface AdminLayoutProps {
+  children?: React.ReactNode;
+}
+
+export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
+  const { user } = useAuthStore();
+
+  // Only admins can access the admin panel
+  if (!user?.isAdmin) {
+    return <Navigate to="/dashboard" replace />;
+  }
   const location = useLocation();
 
   const navItems = [
@@ -72,7 +82,7 @@ export const AdminLayout: React.FC = () => {
 
           {/* Main Content */}
           <div className="flex-grow min-w-0">
-            <Outlet />
+            {children}
           </div>
         </div>
       </div>

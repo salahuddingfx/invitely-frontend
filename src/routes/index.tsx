@@ -152,11 +152,9 @@ export const AppRoutes: React.FC = () => {
       <Route
         path="/dashboard/templates"
         element={
-          <ProtectedRoute>
-            <DashboardLayout>
-              <TemplateGallery />
-            </DashboardLayout>
-          </ProtectedRoute>
+          <PublicLayout>
+            <TemplateGallery />
+          </PublicLayout>
         }
       />
       <Route
