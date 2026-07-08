@@ -652,6 +652,7 @@ export const WeddingLayout: React.FC<WeddingLayoutProps> = ({
                     <img 
                       src={imgUrl || '/placeholder-couple.svg'} 
                       alt={`Gallery ${i}`} 
+                      loading="lazy"
                       className="w-full h-full object-cover" 
                     />
                   </div>
