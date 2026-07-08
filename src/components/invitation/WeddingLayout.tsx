@@ -36,6 +36,73 @@ interface WeddingLayoutProps {
   setLightboxImage: (img: string | null) => void;
 }
 
+const TypingText: React.FC<{ text: string; className?: string; delay?: number; speed?: number }> = ({
+  text,
+  className = '',
+  delay = 0,
+  speed = 60
+}) => {
+  const [displayedText, setDisplayedText] = useState('');
+  const [started, setStarted] = useState(false);
+
+  useEffect(() => {
+    const startTimeout = setTimeout(() => {
+      setStarted(true);
+    }, delay * 1000);
+
+    return () => clearTimeout(startTimeout);
+  }, [delay]);
+
+  useEffect(() => {
+    if (!started) return;
+    let i = 0;
+    const interval = setInterval(() => {
+      if (i < text.length) {
+        setDisplayedText(text.slice(0, i + 1));
+        i++;
+      } else {
+        clearInterval(interval);
+      }
+    }, speed);
+
+    return () => clearInterval(interval);
+  }, [started, text, speed]);
+
+  return <span className={className}>{displayedText}</span>;
+};
+
+const renderProfileAvatar = (url: string, name: string, isBride: boolean) => {
+  const isPlaceholder = !url || url.includes('placeholder') || url.includes('avatar-placeholder');
+  
+  if (isPlaceholder) {
+    return (
+      <div className="w-full h-full bg-gradient-to-br from-amber-100/30 to-amber-200/20 dark:from-slate-850 dark:to-slate-950 flex items-center justify-center relative overflow-hidden">
+        <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#d4af37_1.5px,transparent_1.5px)] [background-size:16px_16px]" />
+        {isBride ? (
+          <svg className="w-16 h-16 text-rose-500/60 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9s2.015-9 4.5-9yM12 3a9 9 0 000 18z" />
+          </svg>
+        ) : (
+          <svg className="w-16 h-16 text-sky-500/60 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9s2.015-9 4.5-9yM12 3a9 9 0 000 18z" />
+          </svg>
+        )}
+        <span className="absolute bottom-3 text-[10px] font-bold tracking-[0.2em] text-amber-500 uppercase font-serif">
+          {name.split(' ')[0]}
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={url}
+      alt={name}
+      className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"
+    />
+  );
+};
+
 export const WeddingLayout: React.FC<WeddingLayoutProps> = ({
   invitation,
   fontClass,
@@ -316,13 +383,17 @@ export const WeddingLayout: React.FC<WeddingLayoutProps> = ({
                 </span>
                 <div className="h-[1px] w-8 bg-amber-500/60" />
               </div>
-              <h1 className={`text-4xl sm:text-6xl ${fontClass} font-normal text-amber-100 tracking-wide`}>
-                {invitation.bride.name.split(' ')[0]} & {invitation.groom.name.split(' ')[0]}
+              <h1 className={`text-4xl sm:text-6xl ${fontClass} font-normal text-amber-100 tracking-wide min-h-[50px] sm:min-h-[70px]`}>
+                <TypingText text={`${invitation.bride.name.split(' ')[0]} & ${invitation.groom.name.split(' ')[0]}`} delay={0.5} speed={70} />
               </h1>
-              <p className="text-xs sm:text-sm font-light text-slate-200 max-w-sm mx-auto opacity-95">
-                {isIslamic
-                  ? 'We request the honor of your presence to bless our Nikkah.'
-                  : 'Join us to celebrate our love and beautiful wedding union.'}
+              <p className="text-xs sm:text-sm font-light text-slate-200 max-w-sm mx-auto opacity-95 min-h-[36px]">
+                <TypingText
+                  text={isIslamic
+                    ? 'We request the honor of your presence to bless our Nikkah.'
+                    : 'Join us to celebrate our love and beautiful wedding union.'}
+                  delay={1.8}
+                  speed={45}
+                />
               </p>
               <div className="text-amber-500/50 text-sm">❦</div>
             </div>
@@ -365,13 +436,8 @@ export const WeddingLayout: React.FC<WeddingLayoutProps> = ({
                 <div className="absolute top-0 right-0 w-24 h-24 bg-rose-500/5 rounded-full blur-2xl pointer-events-none group-hover:bg-rose-500/10 transition-colors" />
                 
                 {/* Image Frame */}
-                <div className="relative w-32 h-32 mx-auto">
-                  <div className="absolute inset-0 rounded-full border-4 border-amber-500/20 group-hover:border-amber-500/40 transition-colors animate-pulse" />
-                  <img
-                    src={invitation.bride.avatar || '/avatar-placeholder.svg'}
-                    alt={invitation.bride.name}
-                    className="w-full h-full rounded-full object-cover border-4 border-transparent shadow-md group-hover:scale-105 transition-transform duration-300"
-                  />
+                <div className="relative w-36 h-48 mx-auto overflow-hidden rounded-t-full border-4 border-amber-500/20 group-hover:border-amber-500/45 transition-colors shadow-lg">
+                  {renderProfileAvatar(invitation.bride.avatar, invitation.bride.name, true)}
                 </div>
                 
                 <div className="space-y-1">
@@ -395,13 +461,8 @@ export const WeddingLayout: React.FC<WeddingLayoutProps> = ({
                 <div className="absolute top-0 left-0 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl pointer-events-none group-hover:bg-blue-500/10 transition-colors" />
                 
                 {/* Image Frame */}
-                <div className="relative w-32 h-32 mx-auto">
-                  <div className="absolute inset-0 rounded-full border-4 border-amber-500/20 group-hover:border-amber-500/40 transition-colors animate-pulse" />
-                  <img
-                    src={invitation.groom.avatar || '/avatar-placeholder.svg'}
-                    alt={invitation.groom.name}
-                    className="w-full h-full rounded-full object-cover border-4 border-transparent shadow-md group-hover:scale-105 transition-transform duration-300"
-                  />
+                <div className="relative w-36 h-48 mx-auto overflow-hidden rounded-t-full border-4 border-amber-500/20 group-hover:border-amber-500/45 transition-colors shadow-lg">
+                  {renderProfileAvatar(invitation.groom.avatar, invitation.groom.name, false)}
                 </div>
                 
                 <div className="space-y-1">
