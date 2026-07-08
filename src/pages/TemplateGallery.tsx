@@ -339,7 +339,8 @@ export const TemplateGallery: React.FC = () => {
                 key={tpl.id}
                 onMouseEnter={() => setHoveredTemplate(tpl.id)}
                 onMouseLeave={() => setHoveredTemplate(null)}
-                className="group bg-white dark:bg-slate-900 rounded-3xl overflow-hidden border border-slate-200/50 dark:border-slate-800/40 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-350 flex flex-col justify-between"
+                onClick={() => setPreviewTemplate(tpl)}
+                className="group bg-white dark:bg-slate-900 rounded-3xl overflow-hidden border border-slate-200/50 dark:border-slate-800/40 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-350 flex flex-col justify-between cursor-pointer"
               >
                 {/* Photo Thumbnail with overlays */}
                 <div className="relative aspect-[4/3] overflow-hidden bg-slate-100 dark:bg-slate-950">
@@ -349,39 +350,42 @@ export const TemplateGallery: React.FC = () => {
                     alt={tpl.name}
                     loading="lazy"
                     className={`w-full h-full object-cover transition-all duration-500 ${
-                      isHovered ? 'scale-[1.03] blur-[2px] opacity-40' : 'group-hover:scale-[1.03]'
+                      isHovered ? 'scale-110 brightness-75' : 'group-hover:scale-[1.03]'
                     }`}
                   />
                   
-                  {/* Live preview overlay on hover */}
+                  {/* Hover overlay - "Click to Preview" */}
                   <AnimatePresence>
                     {isHovered && (
                       <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.95 }}
-                        transition={{ duration: 0.3 }}
-                        className="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-[1px]"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 backdrop-blur-sm z-10"
                       >
-                        <div className="w-[75%] h-[85%] rounded-2xl overflow-hidden shadow-2xl border border-white/20 bg-white">
-                          <div className="w-full h-full overflow-hidden">
-                            <InvitationScreenContent
-                              invitation={mockPreviewInvitation(tpl)}
-                              isPreviewMode={true}
-                            />
+                        <motion.div
+                          initial={{ scale: 0.8, y: 10 }}
+                          animate={{ scale: 1, y: 0 }}
+                          transition={{ delay: 0.05, type: 'spring', stiffness: 300 }}
+                          className="flex flex-col items-center gap-2"
+                        >
+                          <div className="w-14 h-14 rounded-full bg-white/90 dark:bg-slate-900/90 flex items-center justify-center shadow-xl">
+                            <Eye className="w-7 h-7 text-rose-500" />
                           </div>
-                        </div>
+                          <span className="text-white text-xs font-bold drop-shadow-lg">Click to Preview</span>
+                        </motion.div>
                       </motion.div>
                     )}
                   </AnimatePresence>
 
                   {/* Category chip left */}
-                  <span className="absolute bottom-3 left-3 bg-black/60 text-white text-[9px] font-bold tracking-wider px-2 py-0.5 rounded-md uppercase z-10">
+                  <span className="absolute bottom-3 left-3 bg-black/60 text-white text-[9px] font-bold tracking-wider px-2 py-0.5 rounded-md uppercase z-20">
                     {categories.find((c) => c.id === tpl.categoryId)?.name || 'General'}
                   </span>
 
                   {/* Favorite and share top actions */}
-                  <div className="absolute top-3 right-3 flex items-center gap-1.5 z-10">
+                  <div className="absolute top-3 right-3 flex items-center gap-1.5 z-20">
                     <button
                       onClick={(e) => toggleFavorite(tpl.id, e)}
                       className={`p-2 rounded-full backdrop-blur-md border shadow-sm transition-all cursor-pointer ${
@@ -402,12 +406,12 @@ export const TemplateGallery: React.FC = () => {
                   </div>
 
                   {tpl.isVip ? (
-                    <span className="absolute top-3 left-3 bg-gradient-to-r from-purple-600 to-indigo-500 text-white text-[9px] font-bold tracking-wider px-2.5 py-1 rounded-full uppercase shadow-md flex items-center gap-1 z-10">
+                    <span className="absolute top-3 left-3 bg-gradient-to-r from-purple-600 to-indigo-500 text-white text-[9px] font-bold tracking-wider px-2.5 py-1 rounded-full uppercase shadow-md flex items-center gap-1 z-20">
                       <span className="text-[10px]">💎</span>
                       VIP
                     </span>
                   ) : tpl.isPremium && (
-                    <span className="absolute top-3 left-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white text-[9px] font-bold tracking-wider px-2.5 py-1 rounded-full uppercase shadow-md flex items-center gap-1 z-10">
+                    <span className="absolute top-3 left-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white text-[9px] font-bold tracking-wider px-2.5 py-1 rounded-full uppercase shadow-md flex items-center gap-1 z-20">
                       <Sparkles className="w-3 h-3 fill-current animate-pulse" />
                       Premium
                     </span>
@@ -426,7 +430,7 @@ export const TemplateGallery: React.FC = () => {
                   <div className="space-y-3 pt-3 border-t border-slate-150/40 dark:border-slate-850/60">
                     {/* Live Preview Button (PRIMARY) */}
                     <button
-                      onClick={() => setPreviewTemplate(tpl)}
+                      onClick={(e) => { e.stopPropagation(); setPreviewTemplate(tpl); }}
                       className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-rose-500 to-amber-500 hover:from-rose-600 hover:to-amber-600 text-white text-xs font-bold transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer hover:shadow-lg hover:scale-[1.01]"
                     >
                       <Eye className="w-4 h-4" />
@@ -434,7 +438,7 @@ export const TemplateGallery: React.FC = () => {
                     </button>
                     {/* Use Template Button */}
                     <button
-                      onClick={() => navigate(`/dashboard/events/create?templateId=${tpl.id}`)}
+                      onClick={(e) => { e.stopPropagation(); navigate(`/dashboard/events/create?templateId=${tpl.id}`); }}
                       className="w-full py-2 px-3 text-center rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-850 text-xs font-semibold text-slate-700 dark:text-slate-300 transition-all cursor-pointer"
                     >
                       Use This Template →
