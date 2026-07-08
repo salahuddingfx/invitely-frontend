@@ -15,6 +15,7 @@ export const mockEventsList: Invitation[] = [
     locationAddress: '505 Penthouse Plaza, New York, NY 10001',
     locationMapsUrl: 'https://maps.google.com/?q=New+York+NY',
     musicUrl: 'lively-jazz-party-beats',
+    coverPhoto: '/placeholder-template.svg',
     themeColor: {
       primary: '#a855f7',
       secondary: '#f59e0b',

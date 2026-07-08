@@ -29,6 +29,7 @@ import {
 } from 'lucide-react';
 import { ApologyLayout } from './ApologyLayout';
 import { ProposalLayout } from './ProposalLayout';
+import { WeddingLayout } from './WeddingLayout';
 
 interface InvitationScreenContentProps {
   invitation: Invitation;
@@ -680,7 +681,7 @@ export const InvitationScreenContent: React.FC<InvitationScreenContentProps> = (
     );
   };
 
-  // ── Dedicated layouts for Apology & Proposal (no envelope, no event details) ──
+  // ── Dedicated layouts for Apology, Proposal & Wedding (no envelope, no event details) ──
   if (invitation.categoryId === 'cat-7') {
     return (
       <div className="w-full h-full min-h-screen flex flex-col font-sans transition-colors duration-300 relative overflow-x-hidden" style={pageBgStyle}>
@@ -713,6 +714,34 @@ export const InvitationScreenContent: React.FC<InvitationScreenContentProps> = (
         <div className="flex-1 flex flex-col justify-center py-10">
           <ProposalLayout invitation={invitation} fontClass={fontClass} isDark={isDark} />
         </div>
+      </div>
+    );
+  }
+
+  if (invitation.categoryId === 'cat-1') {
+    return (
+      <div className="w-full h-full min-h-screen flex flex-col font-sans transition-colors duration-300 relative overflow-x-hidden" style={pageBgStyle}>
+        <FallingPetals primaryColor={invitation.themeColor.primary} />
+        {isPreviewMode && (
+          <div className="fixed inset-0 z-[9998] pointer-events-none flex items-center justify-center">
+            <div className="absolute inset-0 bg-white/5" />
+            <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 80px, currentColor 80px, currentColor 82px)', color: invitation.themeColor.primary }} />
+            <span className="relative text-6xl sm:text-8xl font-black uppercase tracking-[0.3em] opacity-[0.06] select-none" style={{ color: invitation.themeColor.primary, transform: 'rotate(-25deg)' }}>INVITELY</span>
+          </div>
+        )}
+        <WeddingLayout
+          invitation={invitation}
+          fontClass={fontClass}
+          isDark={isDark}
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+          musicPlaying={musicPlaying}
+          setMusicPlaying={setMusicPlaying}
+          handleAddToCalendar={handleAddToCalendar}
+          renderRSVPBox={renderRSVPBox}
+          lightboxImage={lightboxImage}
+          setLightboxImage={setLightboxImage}
+        />
       </div>
     );
   }

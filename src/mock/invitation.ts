@@ -38,7 +38,7 @@ export interface Invitation {
     background: string;
     text: string;
   };
-  fontFamily: 'playfair' | 'cormorant' | 'greatvibes' | 'sans';
+  fontFamily: 'playfair' | 'cormorant' | 'greatvibes' | 'sans' | 'amiri';
   bride: PersonDetails;
   groom: PersonDetails;
   gallery: string[];

@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 
 interface FallingPetalsProps {
-  primaryColor: string;
+  primaryColor?: string;
+  enabled?: boolean;
 }
 
 interface Petal {
@@ -17,10 +18,12 @@ interface Petal {
   color: string;
 }
 
-export const FallingPetals: React.FC<FallingPetalsProps> = () => {
+export const FallingPetals: React.FC<FallingPetalsProps> = ({ primaryColor, enabled = true }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
+    if (!enabled) return;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
 
