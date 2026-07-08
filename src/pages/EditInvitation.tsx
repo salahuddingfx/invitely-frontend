@@ -4,9 +4,11 @@ import { useBuilderStore } from '../store/builderStore';
 import { useEventStore } from '../store/eventStore';
 import { useTemplateStore } from '../store/templateStore';
 import { useNotificationStore } from '../store/notificationStore';
+import { useAuthStore } from '../store/authStore';
 import { InvitationScreenContent } from '../components/invitation/InvitationScreenContent';
 import { AUDIO_PRESETS } from '../components/invitation/InvitationScreenContent';
 import { CloudinaryUploader } from '../components/CloudinaryUploader';
+import { PaywallModal } from '../components/PaywallModal';
 import { mockGalleryImages } from '../mock/gallery';
 import Slider from '@mui/material/Slider';
 import {
@@ -48,6 +50,9 @@ const slugify = (text: string): string => {
 export const EditInvitation: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useAuthStore();
+  const [paywallOpen, setPaywallOpen] = useState(false);
+  const [paywallPlan, setPaywallPlan] = useState<'plan-premium' | 'plan-vip'>('plan-premium');
 
   const {
     activeStep,
@@ -89,6 +94,20 @@ export const EditInvitation: React.FC = () => {
 
   const handleUpdate = async () => {
     if (id) {
+      // Plan gating: check if template is premium/vip and user plan is adequate
+      const currentTemplate = templates.find((t) => t.id === invitationData.templateId);
+      if (currentTemplate) {
+        if (currentTemplate.isVip && user?.currentPlan !== 'plan-vip') {
+          setPaywallPlan('plan-vip');
+          setPaywallOpen(true);
+          return;
+        }
+        if (currentTemplate.isPremium && user?.currentPlan === 'plan-free') {
+          setPaywallPlan('plan-premium');
+          setPaywallOpen(true);
+          return;
+        }
+      }
       const ok = await updateInvitation(id, invitationData);
       if (ok) {
         resetBuilder();
@@ -108,6 +127,12 @@ export const EditInvitation: React.FC = () => {
 
   return (
     <div className="h-full flex flex-col space-y-6">
+      <PaywallModal
+        isOpen={paywallOpen}
+        onClose={() => setPaywallOpen(false)}
+        requiredPlan={paywallPlan}
+        templateName={templates.find((t) => t.id === invitationData.templateId)?.name}
+      />
       
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 flex-1 min-h-[70vh]">
         
