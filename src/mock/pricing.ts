@@ -10,7 +10,8 @@ export interface PricingPlan {
   buttonText: string;
 }
 
-export const mockPricingPlans: PricingPlan[] = [
+// Fallback data used only when API settings are unavailable
+export const FALLBACK_PLANS: PricingPlan[] = [
   {
     id: 'plan-free',
     name: 'Starter',
