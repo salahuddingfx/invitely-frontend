@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Invitation } from '../../mock/invitation';
 import { CountdownTimer } from './CountdownTimer';
 import { ScratchCard } from './ScratchCard';
+import { ScrollMaskSection, MaskedImage } from './ScrollMaskSection';
+import { useSettingsStore } from '../../store/settingsStore';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Heart,
@@ -78,15 +80,18 @@ const renderProfileAvatar = (url: string, name: string, isBride: boolean) => {
     return (
       <div className="w-full h-full bg-gradient-to-br from-amber-100/30 to-amber-200/20 dark:from-slate-850 dark:to-slate-950 flex items-center justify-center relative overflow-hidden">
         <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#d4af37_1.5px,transparent_1.5px)] [background-size:16px_16px]" />
-        {isBride ? (
-          <svg className="w-16 h-16 text-rose-500/60 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9s2.015-9 4.5-9yM12 3a9 9 0 000 18z" />
-          </svg>
-        ) : (
-          <svg className="w-16 h-16 text-sky-500/60 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9s2.015-9 4.5-9yM12 3a9 9 0 000 18z" />
-          </svg>
-        )}
+        {/* Developer portfolio fallback - show styled initial avatar */}
+        <div className="flex flex-col items-center justify-center gap-1">
+          {isBride ? (
+            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-rose-400 to-rose-600 flex items-center justify-center text-white text-xl font-bold shadow-lg">
+              {name.split(' ')[0]?.charAt(0) || '?'}
+            </div>
+          ) : (
+            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-sky-400 to-sky-600 flex items-center justify-center text-white text-xl font-bold shadow-lg">
+              {name.split(' ')[0]?.charAt(0) || '?'}
+            </div>
+          )}
+        </div>
         <span className="absolute bottom-3 text-[10px] font-bold tracking-[0.2em] text-amber-500 uppercase font-serif">
           {name.split(' ')[0]}
         </span>
@@ -118,6 +123,11 @@ export const WeddingLayout: React.FC<WeddingLayoutProps> = ({
 }) => {
   const [copiedText, setCopiedText] = useState<string | null>(null);
   const [showGiftModal, setShowGiftModal] = useState(false);
+  const { paymentNumbers, fetchSettings } = useSettingsStore();
+
+  useEffect(() => {
+    fetchSettings();
+  }, [fetchSettings]);
 
   // Identify specific styles
   const tid = invitation.templateId.toLowerCase();
@@ -335,11 +345,13 @@ export const WeddingLayout: React.FC<WeddingLayoutProps> = ({
           
           {/* Section 1: Hero visual section */}
           <section className="relative aspect-[3/4] sm:aspect-video w-full overflow-hidden bg-slate-900 border-b-4 border-amber-500/30">
-            <img
-              src={invitation.coverPhoto || '/placeholder-couple.svg'}
-              alt="Wedding Cover"
-              className="w-full h-full object-cover opacity-80"
-            />
+            <ScrollMaskSection maskType="slide-reveal" direction="up" parallaxOffset={0.3} className="w-full h-full">
+              <img
+                src={invitation.coverPhoto || '/placeholder-couple.svg'}
+                alt="Wedding Cover"
+                className="w-full h-full object-cover opacity-80"
+              />
+            </ScrollMaskSection>
             {/* Elegant vignette overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/35 to-black/20" />
             
@@ -419,7 +431,9 @@ export const WeddingLayout: React.FC<WeddingLayoutProps> = ({
                 
                 {/* Image Frame */}
                 <div className="relative w-36 h-48 mx-auto overflow-hidden rounded-t-full border-4 border-amber-500/20 group-hover:border-amber-500/45 transition-colors shadow-lg">
-                  {renderProfileAvatar(invitation.bride.avatar, invitation.bride.name, true)}
+                  <ScrollMaskSection maskType="circle-reveal" parallaxOffset={0.1}>
+                    {renderProfileAvatar(invitation.bride.avatar, invitation.bride.name, true)}
+                  </ScrollMaskSection>
                 </div>
                 
                 <div className="space-y-1">
@@ -444,7 +458,9 @@ export const WeddingLayout: React.FC<WeddingLayoutProps> = ({
                 
                 {/* Image Frame */}
                 <div className="relative w-36 h-48 mx-auto overflow-hidden rounded-t-full border-4 border-amber-500/20 group-hover:border-amber-500/45 transition-colors shadow-lg">
-                  {renderProfileAvatar(invitation.groom.avatar, invitation.groom.name, false)}
+                  <ScrollMaskSection maskType="circle-reveal" parallaxOffset={0.1}>
+                    {renderProfileAvatar(invitation.groom.avatar, invitation.groom.name, false)}
+                  </ScrollMaskSection>
                 </div>
                 
                 <div className="space-y-1">
@@ -643,12 +659,17 @@ export const WeddingLayout: React.FC<WeddingLayoutProps> = ({
 
             <div className="grid grid-cols-2 gap-4">
               {invitation.gallery.map((imgUrl, i) => (
-                <div 
-                  key={i} 
+                <ScrollMaskSection 
+                  key={i}
+                  maskType={i % 2 === 0 ? 'slide-reveal' : 'diagonal-wipe'} 
+                  direction={i % 2 === 0 ? 'up' : 'right'}
+                  parallaxOffset={0.15}
                   className="p-3 bg-white border border-slate-200/60 shadow-xl rounded-sm transform rotate-1 hover:rotate-0 hover:scale-[1.02] transition-all duration-350 cursor-zoom-in"
-                  onClick={() => setLightboxImage(imgUrl)}
                 >
-                  <div className="aspect-[4/3] w-full overflow-hidden bg-slate-100 rounded-sm">
+                  <div 
+                    className="aspect-[4/3] w-full overflow-hidden bg-slate-100 rounded-sm"
+                    onClick={() => setLightboxImage(imgUrl)}
+                  >
                     <img 
                       src={imgUrl || '/placeholder-couple.svg'} 
                       alt={`Gallery ${i}`} 
@@ -660,7 +681,7 @@ export const WeddingLayout: React.FC<WeddingLayoutProps> = ({
                   <div className="pt-2 pb-0.5 text-[10px] text-center font-playfair italic text-slate-650">
                     Memories {i + 1}
                   </div>
-                </div>
+                </ScrollMaskSection>
               ))}
             </div>
           </ScrollReveal>
