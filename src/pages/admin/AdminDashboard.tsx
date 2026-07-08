@@ -13,7 +13,8 @@ import {
   ArrowRight,
   DollarSign,
   Smartphone,
-  Loader2
+  Loader2,
+  Settings
 } from 'lucide-react';
 
 export const AdminDashboard: React.FC = () => {
