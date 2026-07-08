@@ -33,7 +33,9 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
   const navLinks = [
     { name: 'Home', path: '/' },
     { name: 'Templates', path: '/dashboard/templates' },
-    { name: 'Pricing', path: '/dashboard/pricing' }
+    { name: 'Pricing', path: '/dashboard/pricing' },
+    { name: 'About Us', path: '/about' },
+    { name: 'Contact', path: '/contact' }
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -243,7 +245,12 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
           <div className="flex flex-col sm:flex-row justify-between items-center text-xs">
             <p>© {new Date().getFullYear()} Invitely Inc. All rights reserved.</p>
             <p className="mt-2 sm:mt-0 text-slate-500">
-              Crafted by <a href="https://salahuddin.codes" target="_blank" rel="noreferrer" className="text-rose-400 hover:text-rose-350 transition-colors font-medium">Salah Uddin Kader</a> at <a href="https://nextorastudion.tech" target="_blank" rel="noreferrer" className="text-amber-400 hover:text-amber-300 transition-colors font-medium">Nextora Studio</a> (<a href="https://github.com/salahuddingfx" target="_blank" rel="noreferrer" className="underline hover:text-slate-200 transition-colors">salahuddingfx</a>).
+              Crafted by{' '}
+              <Link to="/developer" className="text-rose-400 hover:text-rose-350 transition-colors font-medium">
+                Salah Uddin Kader
+              </Link>{' '}at{' '}
+              <a href="https://nextorastudion.tech" target="_blank" rel="noreferrer" className="text-amber-400 hover:text-amber-300 transition-colors font-medium">Nextora Studio</a>{' '}(
+              <a href="https://github.com/salahuddingfx" target="_blank" rel="noreferrer" className="underline hover:text-slate-200 transition-colors">salahuddingfx</a>).
             </p>
           </div>
         </div>
