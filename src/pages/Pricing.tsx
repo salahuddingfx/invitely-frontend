@@ -1,8 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { useNotificationStore } from '../store/notificationStore';
-import { usePaymentStore, PAYMENT_NUMBERS, PaymentMethod } from '../store/paymentStore';
-import { mockPricingPlans, PricingPlan } from '../mock/pricing';
+import { usePaymentStore, PaymentMethod } from '../store/paymentStore';
+import { useSettingsStore } from '../store/settingsStore';
+import { PricingPlan } from '../mock/pricing';
 import { CloudinaryUploader } from '../components/CloudinaryUploader';
 import {
   CheckCircle2,
@@ -21,6 +22,7 @@ export const Pricing: React.FC = () => {
   const { user, updateUserPlan } = useAuthStore();
   const { addToast } = useNotificationStore();
   const { submitPayment, isLoading: isPaymentLoading } = usePaymentStore();
+  const { plans: settingsPlans, paymentNumbers, fetchSettings } = useSettingsStore();
 
   const [selectedPlan, setSelectedPlan] = useState<PricingPlan | null>(null);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
@@ -30,6 +32,13 @@ export const Pricing: React.FC = () => {
   const [transactionId, setTransactionId] = useState('');
   const [screenshotUrl, setScreenshotUrl] = useState('');
   const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    fetchSettings();
+  }, [fetchSettings]);
+
+  // Convert settings plans to array format for display
+  const pricingPlans: PricingPlan[] = Object.values(settingsPlans);
 
   const handleOpenCheckout = (plan: PricingPlan) => {
     if (user?.currentPlan === plan.id) {
