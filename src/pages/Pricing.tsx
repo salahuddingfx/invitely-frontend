@@ -206,10 +206,10 @@ export const Pricing: React.FC = () => {
                   </p>
                   <div className="flex items-center justify-between">
                     <span className="text-xl font-bold font-mono text-slate-900 dark:text-white">
-                      {paymentMethod === 'bkash' ? PAYMENT_NUMBERS.bkash.personal : PAYMENT_NUMBERS.nagad.personal}
+                      {paymentMethod === 'bkash' ? paymentNumbers.bkash.personal : paymentNumbers.nagad.personal}
                     </span>
                     <button
-                      onClick={() => handleCopyNumber(paymentMethod === 'bkash' ? PAYMENT_NUMBERS.bkash.personal : PAYMENT_NUMBERS.nagad.personal)}
+                      onClick={() => handleCopyNumber(paymentMethod === 'bkash' ? paymentNumbers.bkash.personal : paymentNumbers.nagad.personal)}
                       className={`p-2 rounded-lg transition-colors ${
                         copied
                           ? 'bg-emerald-500/10 text-emerald-500'
@@ -428,7 +428,7 @@ export const Pricing: React.FC = () => {
 
       {/* Pricing Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {mockPricingPlans.map((plan) => {
+        {pricingPlans.map((plan) => {
           const isCurrent = user?.currentPlan === plan.id;
           return (
             <div
