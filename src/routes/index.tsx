@@ -36,6 +36,7 @@ import { Pricing } from '../pages/Pricing';
 import { AdminDashboard } from '../pages/admin/AdminDashboard';
 import { AdminUsers } from '../pages/admin/AdminUsers';
 import { AdminPayments } from '../pages/admin/AdminPayments';
+import { AdminSettings } from '../pages/admin/AdminSettings';
 
 // Protected Route Wrapper
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -257,6 +258,16 @@ export const AppRoutes: React.FC = () => {
           <ProtectedRoute>
             <AdminLayout>
               <AdminPayments />
+            </AdminLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/settings"
+        element={
+          <ProtectedRoute>
+            <AdminLayout>
+              <AdminSettings />
             </AdminLayout>
           </ProtectedRoute>
         }
