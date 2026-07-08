@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, Variants } from 'framer-motion';
 import {
@@ -14,9 +14,17 @@ import {
   MapPin
 } from 'lucide-react';
 import { mockTemplates } from '../mock/templates';
-import { mockPricingPlans } from '../mock/pricing';
+import { useSettingsStore } from '../store/settingsStore';
 
 export const Home: React.FC = () => {
+  const { plans: settingsPlans, fetchSettings } = useSettingsStore();
+
+  useEffect(() => {
+    fetchSettings();
+  }, [fetchSettings]);
+
+  const pricingPlans = Object.values(settingsPlans);
+
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
@@ -250,7 +258,7 @@ export const Home: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {mockPricingPlans.map((plan) => (
+            {pricingPlans.map((plan) => (
               <div
                 key={plan.id}
                 className={`relative rounded-3xl p-8 border flex flex-col justify-between ${
@@ -273,7 +281,7 @@ export const Home: React.FC = () => {
                   </p>
                   <div className="flex items-baseline gap-1.5 mb-6">
                     <span className="text-4xl sm:text-5xl font-extrabold font-playfair tracking-tight text-slate-950 dark:text-white">
-                      {plan.price}
+                      {plan.priceBDT === 0 ? '$0' : plan.price}
                     </span>
                     <span className="text-slate-400 text-xs font-semibold tracking-wide">
                       / {plan.period}
