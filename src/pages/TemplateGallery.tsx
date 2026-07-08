@@ -452,136 +452,175 @@ export const TemplateGallery: React.FC = () => {
         </motion.div>
       )}
 
-      {/* Fullscreen Interactive Template Preview Modal Overlay */}
+      {/* Fullscreen Interactive Template Preview Modal */}
       <AnimatePresence>
         {previewTemplate && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 md:p-8"
+            className="fixed inset-0 z-50 bg-black/70 backdrop-blur-lg flex items-end md:items-center justify-center"
           >
+            {/* Mobile: full-screen sheet | Desktop: centered modal */}
             <motion.div
-              initial={{ scale: 0.96, y: 15 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.96, y: 15 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 220 }}
-              className="bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/40 rounded-3xl w-full max-w-5xl h-[85vh] flex flex-col md:flex-row overflow-hidden shadow-2xl relative"
+              initial={{ y: '100%', opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: '100%', opacity: 0 }}
+              transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+              className="bg-white dark:bg-slate-900 w-full h-[95vh] md:h-[88vh] md:max-w-6xl md:rounded-3xl rounded-t-3xl overflow-hidden shadow-2xl flex flex-col relative"
             >
               
-              {/* Close Button top corner */}
-              <button
-                onClick={() => setPreviewTemplate(null)}
-                className="absolute top-4 right-4 z-50 p-2 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:opacity-85 text-slate-700 dark:text-slate-200 cursor-pointer shadow-sm transition-opacity"
-              >
-                <X className="w-4 h-4" />
-              </button>
+              {/* MOBILE HEADER - visible only on small screens */}
+              <div className="md:hidden flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shrink-0">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-[9px] font-bold tracking-widest px-2 py-0.5 rounded bg-rose-100 dark:bg-rose-950/40 text-rose-600 uppercase shrink-0">
+                    {categories.find((c) => c.id === previewTemplate.categoryId)?.name || 'General'}
+                  </span>
+                  <h3 className="text-sm font-bold font-playfair text-slate-900 dark:text-white truncate">{previewTemplate.name}</h3>
+                </div>
+                <button
+                  onClick={() => setPreviewTemplate(null)}
+                  className="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 shrink-0 cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
 
-              {/* LEFT COLUMN: Embedded Interactive Invitation mockup screen */}
-              <div className="w-full md:w-[48%] h-[50%] md:h-full bg-slate-950 p-4 flex items-center justify-center border-b md:border-b-0 md:border-r border-slate-150/40 dark:border-slate-800/50 relative overflow-hidden">
-                <div className="absolute inset-0 bg-radial-gradient from-rose-500/5 to-transparent pointer-events-none" />
+              {/* DESKTOP HEADER - visible only on md+ */}
+              <div className="hidden md:flex items-center justify-between px-8 py-4 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shrink-0">
+                <div className="flex items-center gap-3">
+                  <span className="text-[10px] font-bold tracking-widest px-3 py-1 rounded bg-rose-100 dark:bg-rose-950/40 text-rose-600 uppercase">
+                    {categories.find((c) => c.id === previewTemplate.categoryId)?.name || 'General'}
+                  </span>
+                  {previewTemplate.isPremium && (
+                    <span className="text-[10px] font-bold tracking-widest px-3 py-1 rounded bg-amber-100 dark:bg-amber-950/40 text-amber-600 uppercase flex items-center gap-1">
+                      <Sparkles className="w-3 h-3 fill-current" /> Premium
+                    </span>
+                  )}
+                  <h2 className="text-lg font-bold font-playfair text-slate-900 dark:text-white">{previewTemplate.name} Theme</h2>
+                </div>
+                <button
+                  onClick={() => setPreviewTemplate(null)}
+                  className="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:opacity-80 cursor-pointer transition-opacity"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* MAIN CONTENT - responsive layout */}
+              <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
                 
-                {/* Simulated mobile phone preview container */}
-                <div className="w-[280px] h-[92%] rounded-[36px] border-8 border-slate-800 bg-white shadow-2xl relative overflow-hidden flex flex-col justify-between">
-                  {/* Phone Notch */}
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-28 h-4 bg-slate-800 rounded-b-xl z-50" />
+                {/* LEFT: Phone Preview */}
+                <div className="w-full md:w-[42%] lg:w-[40%] bg-gradient-to-br from-slate-900 via-slate-950 to-black flex items-center justify-center shrink-0
+                  h-[45%] md:h-full border-b md:border-b-0 md:border-r border-slate-700/50 relative overflow-hidden">
+                  {/* Subtle radial glow */}
+                  <div className="absolute inset-0 opacity-30" style={{ background: `radial-gradient(circle at 50% 30%, ${previewTemplate.theme.primaryColor}15, transparent 70%)` }} />
                   
-                  {/* Scrolling preview container */}
-                  <div className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-none relative pt-4">
-                    <InvitationScreenContent 
-                      invitation={mockPreviewInvitation(previewTemplate)} 
-                      isPreviewMode={true} 
-                    />
+                  {/* Phone frame - responsive sizing */}
+                  <div className="relative w-[min(260px,70vw)] md:w-[280px] lg:w-[300px] h-[90%] max-h-[600px] rounded-[36px] border-[6px] md:border-8 border-slate-800 bg-white dark:bg-slate-50 shadow-2xl overflow-hidden flex flex-col">
+                    {/* Notch */}
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 md:w-28 h-4 md:h-5 bg-slate-800 rounded-b-2xl z-50" />
+                    
+                    {/* Scrollable invitation content */}
+                    <div className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-none pt-3">
+                      <InvitationScreenContent 
+                        invitation={mockPreviewInvitation(previewTemplate)} 
+                        isPreviewMode={true} 
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* RIGHT COLUMN: Template details parameters and actions */}
-              <div className="w-full md:w-[52%] h-[50%] md:h-full p-6 md:p-10 flex flex-col justify-between overflow-y-auto">
-                <div className="space-y-6">
-                  
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <span className="bg-rose-100 dark:bg-rose-950/40 text-rose-600 text-[10px] font-bold tracking-widest px-2.5 py-0.5 rounded uppercase">
-                        {categories.find((c) => c.id === previewTemplate.categoryId)?.name || 'General Design'}
-                      </span>
-                      {previewTemplate.isPremium && (
-                        <span className="bg-amber-100 dark:bg-amber-950/40 text-amber-600 text-[10px] font-bold tracking-widest px-2.5 py-0.5 rounded uppercase flex items-center gap-1">
-                          <Sparkles className="w-3 h-3 fill-current" />
-                          Premium
-                        </span>
-                      )}
-                    </div>
-                    <h2 className="text-2xl font-bold font-playfair text-slate-900 dark:text-white leading-tight">
-                      {previewTemplate.name} Theme
-                    </h2>
-                  </div>
+                {/* RIGHT: Details Panel */}
+                <div className="flex-1 flex flex-col overflow-hidden">
+                  {/* Scrollable details */}
+                  <div className="flex-1 overflow-y-auto px-5 md:px-8 lg:px-10 py-5 md:py-8 space-y-5">
+                    
+                    {/* Description */}
+                    <p className="text-slate-500 dark:text-slate-400 text-xs md:text-sm leading-relaxed">
+                      {previewTemplate.description}
+                    </p>
 
-                  <p className="text-slate-500 dark:text-slate-400 text-xs leading-relaxed">
-                    {previewTemplate.description}
-                  </p>
-
-                  {/* Fonts and theme swatch dots */}
-                  <div className="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-850">
-                    <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Design Swatch Details</span>
-                    <div className="flex items-center gap-8">
-                      <div className="flex items-center gap-1.5">
-                        <div className="w-5 h-5 rounded-full border border-slate-200/50 shadow-sm" style={{ backgroundColor: previewTemplate.theme.primaryColor }} title="Primary Theme Color" />
-                        <div className="w-5 h-5 rounded-full border border-slate-200/50 shadow-sm" style={{ backgroundColor: previewTemplate.theme.backgroundColor }} title="Background Shade" />
-                        <div className="w-5 h-5 rounded-full border border-slate-200/50 shadow-sm" style={{ backgroundColor: previewTemplate.theme.textColor }} title="Text Shade" />
+                    {/* Color Palette */}
+                    <div className="space-y-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+                      <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Color Palette</span>
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2">
+                          {[
+                            { color: previewTemplate.theme.primaryColor, label: 'Primary' },
+                            { color: previewTemplate.theme.backgroundColor, label: 'Background' },
+                            { color: previewTemplate.theme.textColor, label: 'Text' },
+                          ].map((item) => (
+                            <div key={item.label} className="flex flex-col items-center gap-1">
+                              <div 
+                                className="w-8 h-8 md:w-9 md:h-9 rounded-xl border-2 border-slate-200/60 dark:border-slate-700 shadow-sm" 
+                                style={{ backgroundColor: item.color }} 
+                                title={item.label}
+                              />
+                              <span className="text-[8px] md:text-[9px] text-slate-400 font-medium">{item.label}</span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                      <div className="text-xs text-slate-500 dark:text-slate-400">
-                        Font: <span className="font-bold uppercase tracking-wider text-[10px] bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-700 dark:text-slate-200">{previewTemplate.theme.fontFamily}</span>
+                    </div>
+
+                    {/* Font */}
+                    <div className="space-y-2 pt-3 border-t border-slate-100 dark:border-slate-800">
+                      <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Typography</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs md:text-sm font-bold bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg text-slate-700 dark:text-slate-200 uppercase tracking-wider">
+                          {previewTemplate.theme.fontFamily}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Tags */}
+                    <div className="space-y-2 pt-3 border-t border-slate-100 dark:border-slate-800">
+                      <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Style Tags</span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {getTemplateTags(previewTemplate).map((tag) => (
+                          <span key={tag} className="text-[9px] md:text-[10px] font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-full uppercase tracking-wider">
+                            #{tag}
+                          </span>
+                        ))}
                       </div>
                     </div>
                   </div>
 
-                  {/* Styles tags preview chips */}
-                  <div className="space-y-2">
-                    <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Associated Style Tags</span>
-                    <div className="flex flex-wrap gap-1.5">
-                      {getTemplateTags(previewTemplate).map((tag) => (
-                        <span key={tag} className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-full uppercase tracking-wider">
-                          #{tag}
-                        </span>
-                      ))}
+                  {/* Sticky bottom actions */}
+                  <div className="shrink-0 px-5 md:px-8 lg:px-10 py-4 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900">
+                    <div className="flex items-center gap-2.5">
+                      <button
+                        onClick={() => {
+                          setPreviewTemplate(null);
+                          navigate(`/dashboard/events/create?templateId=${previewTemplate.id}`);
+                        }}
+                        className="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-rose-500 to-amber-500 hover:from-rose-600 hover:to-amber-600 text-white text-xs md:text-sm font-bold transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer hover:shadow-lg"
+                      >
+                        Select & Customize
+                        <ArrowRight className="w-4 h-4" />
+                      </button>
+
+                      <button
+                        onClick={(e) => toggleFavorite(previewTemplate.id, e)}
+                        className="p-3 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors shrink-0"
+                        title="Toggle Favorite"
+                      >
+                        <Star className={`w-4 h-4 ${favorites.includes(previewTemplate.id) ? 'fill-current text-rose-500' : ''}`} />
+                      </button>
+
+                      <button
+                        onClick={(e) => shareTemplate(previewTemplate.slug, e)}
+                        className="p-3 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors shrink-0"
+                        title="Share Link"
+                      >
+                        <Share2 className="w-4 h-4" />
+                      </button>
                     </div>
                   </div>
-
-                </div>
-
-                {/* Actions footer */}
-                <div className="flex items-center gap-3 pt-6 border-t border-slate-100 dark:border-slate-850 mt-6">
-                  <button
-                    onClick={() => {
-                      setPreviewTemplate(null);
-                      navigate(`/dashboard/events/create?templateId=${previewTemplate.id}`);
-                    }}
-                    className="flex-1 py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-950 dark:hover:bg-slate-200 text-white text-xs font-bold transition-all shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
-                  >
-                    Select & Customize
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
-
-                  <button
-                    onClick={(e) => toggleFavorite(previewTemplate.id, e)}
-                    className="p-3 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-slate-850 cursor-pointer transition-colors"
-                    title="Toggle Favorite"
-                  >
-                    <Star className={`w-4 h-4 ${favorites.includes(previewTemplate.id) ? 'fill-current text-rose-500' : ''}`} />
-                  </button>
-
-                  <button
-                    onClick={(e) => shareTemplate(previewTemplate.slug, e)}
-                    className="p-3 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-slate-850 cursor-pointer transition-colors"
-                    title="Share Link"
-                  >
-                    <Share2 className="w-4 h-4" />
-                  </button>
                 </div>
 
               </div>
-
             </motion.div>
           </motion.div>
         )}
