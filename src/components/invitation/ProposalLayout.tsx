@@ -69,7 +69,7 @@ export const ProposalLayout: React.FC<ProposalLayoutProps> = ({ invitation, font
   const [noResponse, setNoResponse] = useState('');
   const [typedText, setTypedText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const typeTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const typeTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const allRevealed = revealedCards.length === MESSAGES.length;
 
