@@ -70,8 +70,9 @@ export const Developer: React.FC = () => {
           <div className="relative flex-shrink-0">
             <div className="w-32 h-32 rounded-3xl overflow-hidden border-2 border-amber-500/50 shadow-lg relative group">
               <img
-                src="/avatar-placeholder.svg"
+                src="/salah-developer.png"
                 alt="Salah Uddin Kader"
+                loading="lazy"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-350"
               />
             </div>

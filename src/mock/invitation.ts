@@ -18,6 +18,14 @@ export interface RSVP {
   phone?: string;
 }
 
+export interface LoveStoryMilestone {
+  id: string;
+  title: string;
+  date: string;
+  description: string;
+  icon: string;
+}
+
 export interface Invitation {
   id: string;
   title: string;
@@ -43,6 +51,7 @@ export interface Invitation {
   groom: PersonDetails;
   gallery: string[];
   rsvps: RSVP[];
+  loveStory?: LoveStoryMilestone[];
 }
 
 export const mockInvitationSample: Invitation = {
