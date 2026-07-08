@@ -454,7 +454,7 @@ export const Pricing: React.FC = () => {
                 </p>
                 <div className="flex items-baseline gap-1 mb-5">
                   <span className="text-3xl font-bold font-playfair text-slate-950 dark:text-white">
-                    {plan.price === '$0' ? '$0' : plan.price === '$19' ? '৳1,900' : '৳4,900'}
+                    {plan.priceBDT === 0 ? '$0' : plan.price}
                   </span>
                   <span className="text-slate-400 text-[10px] font-semibold">/ {plan.period}</span>
                 </div>

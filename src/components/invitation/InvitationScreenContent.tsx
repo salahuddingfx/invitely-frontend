@@ -59,6 +59,10 @@ export const AUDIO_PRESETS = [
   { id: 'arabic-violin-tarab',            name: '🎻 Tarab Arabic Violin (Romance)',           url: '/audio/arabic-tarab-violin.mp3' },
   { id: 'oriental-romantic-qanun',        name: '🎵 Oriental Qanun Romance (Eastern)',        url: '/audio/oriental-qanun.mp3' },
   { id: 'arabic-maqam-soul',              name: '✨ Maqam Soul Arabic Piano (Emotional)',     url: '/audio/arabic-maqam-piano.mp3' },
+  { id: 'arabic-habibi-love',             name: '💕 Arabic Habibi Love Song (Romantic)',      url: '/audio/arabic-habibi-love.mp3' },
+  { id: 'arabic-wedding-zaffa',           name: '💒 Arabic Wedding Zaffa (Procession)',       url: '/audio/arabic-zaffa.mp3' },
+  { id: 'arabic-sufi-dhikr',              name: '🌀 Sufi Dhikr Ambient (Spiritual)',          url: '/audio/arabic-sufi-dhikr.mp3' },
+  { id: 'arabic-classical-maqam',         name: '🎼 Classical Arabic Maqam (Traditional)',    url: '/audio/arabic-classical-maqam.mp3' },
   { id: 'happy-birthday-party',            name: 'Happy Birthday Party (Joyful)',             url: '/audio/birthday-party.mp3' },
   { id: 'romantic-anniversary-violin',     name: 'Romantic Violin (Anniversary)',             url: '/audio/romantic-violin.mp3' },
   { id: 'baby-lullaby-aqiqah',             name: 'Gentle Baby Lullaby (Aqiqah/Shower)',      url: '/audio/baby-lullaby.mp3' },
@@ -96,6 +100,10 @@ const TEMPLATE_SOUND_MAP: Record<string, string> = {
   'tpl-nikkah-emerald':       'arabic-oud-duff',
   'tpl-nikkah-persian':       'arabic-oud-duff',
   'tpl-mehndi-traditional':   'mehndi-dhol-beats',
+  // Arabic-specific fallbacks
+  'tpl-arabic-wedding':       'arabic-wedding-zaffa',
+  'tpl-arabic-romantic':      'arabic-romantic-oud',
+  'tpl-arabic-classical':     'arabic-classical-maqam',
   // Birthday templates
   'tpl-midnight-party':       'neon-edm-party',
   'tpl-retro-arcade':         'retro-80s-synth',

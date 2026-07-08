@@ -799,11 +799,11 @@ export const WeddingLayout: React.FC<WeddingLayoutProps> = ({
                     <span className="w-8 h-8 rounded-full bg-rose-500 text-white font-extrabold text-xs flex items-center justify-center">b</span>
                     <div>
                       <span className="text-[10px] font-bold text-slate-400 block uppercase">bKash Personal</span>
-                      <span className="text-xs font-bold text-slate-700 dark:text-slate-100">01712-345678</span>
+                      <span className="text-xs font-bold text-slate-700 dark:text-slate-100">{paymentNumbers.bkash.personal}</span>
                     </div>
                   </div>
                   <button
-                    onClick={() => handleCopy('01712345678', 'bkash')}
+                    onClick={() => handleCopy(paymentNumbers.bkash.personal.replace(/-/g, ''), 'bkash')}
                     className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-slate-100 transition-colors flex items-center justify-center gap-1 cursor-pointer flex-row"
                   >
                     {copiedText === 'bkash' ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
@@ -817,11 +817,11 @@ export const WeddingLayout: React.FC<WeddingLayoutProps> = ({
                     <span className="w-8 h-8 rounded-full bg-orange-500 text-white font-extrabold text-xs flex items-center justify-center">n</span>
                     <div>
                       <span className="text-[10px] font-bold text-slate-400 block uppercase">Nagad Personal</span>
-                      <span className="text-xs font-bold text-slate-700 dark:text-slate-100">01812-345678</span>
+                      <span className="text-xs font-bold text-slate-700 dark:text-slate-100">{paymentNumbers.nagad.personal}</span>
                     </div>
                   </div>
                   <button
-                    onClick={() => handleCopy('01812345678', 'nagad')}
+                    onClick={() => handleCopy(paymentNumbers.nagad.personal.replace(/-/g, ''), 'nagad')}
                     className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-slate-100 transition-colors flex items-center justify-center gap-1 cursor-pointer flex-row"
                   >
                     {copiedText === 'nagad' ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}

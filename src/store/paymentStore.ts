@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { api } from '../services/api';
+import { useSettingsStore } from './settingsStore';
 
 export type PaymentMethod = 'bkash' | 'nagad';
 
@@ -18,6 +19,18 @@ export interface PaymentRequest {
   rejectionReason?: string;
   createdAt: string;
 }
+
+// Get payment numbers from settings store (DB-driven)
+export const getPaymentNumbers = () => {
+  return useSettingsStore.getState().paymentNumbers;
+};
+
+// Legacy export for backward compatibility - reads from settings store
+export const PAYMENT_NUMBERS = new Proxy({} as Record<string, any>, {
+  get(_target, prop: string) {
+    return getPaymentNumbers()[prop as keyof ReturnType<typeof getPaymentNumbers>];
+  }
+});
 
 interface PaymentState {
   payments: PaymentRequest[];
@@ -41,21 +54,7 @@ interface PaymentState {
   clearError: () => void;
 }
 
-// bKash & Nagad merchant numbers (replace with real ones)
-export const PAYMENT_NUMBERS = {
-  bkash: {
-    personal: '01XXXXXXXXX',
-    merchant: '01XXXXXXXXX',
-    instructions: 'Send money to bKash personal number'
-  },
-  nagad: {
-    personal: '01XXXXXXXXX',
-    merchant: '01XXXXXXXXX',
-    instructions: 'Send money to Nagad personal number'
-  }
-};
-
-export const usePaymentStore = create<PaymentState>((set, get) => ({
+export const usePaymentStore = create<PaymentState>((set) => ({
   payments: [],
   currentPayment: null,
   isLoading: false,
