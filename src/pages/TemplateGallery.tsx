@@ -16,7 +16,9 @@ import {
   X,
   Share2,
   ChevronDown,
-  LayoutGrid
+  LayoutGrid,
+  Eye,
+  Play
 } from 'lucide-react';
 
 // Dynamic tags resolver based on description details and template attributes
@@ -117,6 +119,7 @@ export const TemplateGallery: React.FC = () => {
 
   // Modal expander state
   const [previewTemplate, setPreviewTemplate] = useState<Template | null>(null);
+  const [hoveredTemplate, setHoveredTemplate] = useState<string | null>(null);
 
   const toggleFavorite = (id: string, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
@@ -329,28 +332,56 @@ export const TemplateGallery: React.FC = () => {
         >
           {filteredTemplates.map((tpl) => {
             const isFav = favorites.includes(tpl.id);
+            const isHovered = hoveredTemplate === tpl.id;
             return (
               <motion.div
                 layout
                 key={tpl.id}
+                onMouseEnter={() => setHoveredTemplate(tpl.id)}
+                onMouseLeave={() => setHoveredTemplate(null)}
                 className="group bg-white dark:bg-slate-900 rounded-3xl overflow-hidden border border-slate-200/50 dark:border-slate-800/40 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-350 flex flex-col justify-between"
               >
                 {/* Photo Thumbnail with overlays */}
                 <div className="relative aspect-[4/3] overflow-hidden bg-slate-100 dark:bg-slate-950">
+                  {/* Static preview image */}
                   <img
                     src={tpl.previewImage}
                     alt={tpl.name}
                     loading="lazy"
-                    className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
+                    className={`w-full h-full object-cover transition-all duration-500 ${
+                      isHovered ? 'scale-[1.03] blur-[2px] opacity-40' : 'group-hover:scale-[1.03]'
+                    }`}
                   />
                   
+                  {/* Live preview overlay on hover */}
+                  <AnimatePresence>
+                    {isHovered && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        transition={{ duration: 0.3 }}
+                        className="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-[1px]"
+                      >
+                        <div className="w-[75%] h-[85%] rounded-2xl overflow-hidden shadow-2xl border border-white/20 bg-white">
+                          <div className="w-full h-full overflow-hidden">
+                            <InvitationScreenContent
+                              invitation={mockPreviewInvitation(tpl)}
+                              isPreviewMode={true}
+                            />
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
                   {/* Category chip left */}
-                  <span className="absolute bottom-3 left-3 bg-black/60 text-white text-[9px] font-bold tracking-wider px-2 py-0.5 rounded-md uppercase">
+                  <span className="absolute bottom-3 left-3 bg-black/60 text-white text-[9px] font-bold tracking-wider px-2 py-0.5 rounded-md uppercase z-10">
                     {categories.find((c) => c.id === tpl.categoryId)?.name || 'General'}
                   </span>
 
                   {/* Favorite and share top actions */}
-                  <div className="absolute top-3 right-3 flex items-center gap-1.5">
+                  <div className="absolute top-3 right-3 flex items-center gap-1.5 z-10">
                     <button
                       onClick={(e) => toggleFavorite(tpl.id, e)}
                       className={`p-2 rounded-full backdrop-blur-md border shadow-sm transition-all cursor-pointer ${
@@ -371,12 +402,12 @@ export const TemplateGallery: React.FC = () => {
                   </div>
 
                   {tpl.isVip ? (
-                    <span className="absolute top-3 left-3 bg-gradient-to-r from-purple-600 to-indigo-500 text-white text-[9px] font-bold tracking-wider px-2.5 py-1 rounded-full uppercase shadow-md flex items-center gap-1">
+                    <span className="absolute top-3 left-3 bg-gradient-to-r from-purple-600 to-indigo-500 text-white text-[9px] font-bold tracking-wider px-2.5 py-1 rounded-full uppercase shadow-md flex items-center gap-1 z-10">
                       <span className="text-[10px]">💎</span>
                       VIP
                     </span>
                   ) : tpl.isPremium && (
-                    <span className="absolute top-3 left-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white text-[9px] font-bold tracking-wider px-2.5 py-1 rounded-full uppercase shadow-md flex items-center gap-1">
+                    <span className="absolute top-3 left-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white text-[9px] font-bold tracking-wider px-2.5 py-1 rounded-full uppercase shadow-md flex items-center gap-1 z-10">
                       <Sparkles className="w-3 h-3 fill-current animate-pulse" />
                       Premium
                     </span>
@@ -392,21 +423,22 @@ export const TemplateGallery: React.FC = () => {
                     </p>
                   </div>
                   
-                  <div className="space-y-4 pt-3 border-t border-slate-150/40 dark:border-slate-850/60">
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => navigate(`/dashboard/events/create?templateId=${tpl.id}`)}
-                        className="flex-1 py-2 px-3 text-center rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-950 dark:hover:bg-slate-200 text-white text-xs font-bold transition-all shadow-sm cursor-pointer"
-                      >
-                        Use Style
-                      </button>
-                      <button
-                        onClick={() => setPreviewTemplate(tpl)}
-                        className="py-2 px-3.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-850 text-xs font-semibold text-center cursor-pointer transition-all"
-                      >
-                        Preview
-                      </button>
-                    </div>
+                  <div className="space-y-3 pt-3 border-t border-slate-150/40 dark:border-slate-850/60">
+                    {/* Live Preview Button (PRIMARY) */}
+                    <button
+                      onClick={() => setPreviewTemplate(tpl)}
+                      className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-rose-500 to-amber-500 hover:from-rose-600 hover:to-amber-600 text-white text-xs font-bold transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer hover:shadow-lg hover:scale-[1.01]"
+                    >
+                      <Eye className="w-4 h-4" />
+                      Live Preview
+                    </button>
+                    {/* Use Template Button */}
+                    <button
+                      onClick={() => navigate(`/dashboard/events/create?templateId=${tpl.id}`)}
+                      className="w-full py-2 px-3 text-center rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-850 text-xs font-semibold text-slate-700 dark:text-slate-300 transition-all cursor-pointer"
+                    >
+                      Use This Template →
+                    </button>
                   </div>
                 </div>
 
