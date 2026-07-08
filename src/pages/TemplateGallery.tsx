@@ -369,7 +369,12 @@ export const TemplateGallery: React.FC = () => {
                     </button>
                   </div>
 
-                  {tpl.isPremium && (
+                  {tpl.isVip ? (
+                    <span className="absolute top-3 left-3 bg-gradient-to-r from-purple-600 to-indigo-500 text-white text-[9px] font-bold tracking-wider px-2.5 py-1 rounded-full uppercase shadow-md flex items-center gap-1">
+                      <span className="text-[10px]">💎</span>
+                      VIP
+                    </span>
+                  ) : tpl.isPremium && (
                     <span className="absolute top-3 left-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white text-[9px] font-bold tracking-wider px-2.5 py-1 rounded-full uppercase shadow-md flex items-center gap-1">
                       <Sparkles className="w-3 h-3 fill-current animate-pulse" />
                       Premium
