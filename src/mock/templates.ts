@@ -4,7 +4,7 @@ export interface TemplateTheme {
   accentColor: string;
   backgroundColor: string;
   textColor: string;
-  fontFamily: 'playfair' | 'cormorant' | 'greatvibes' | 'sans';
+  fontFamily: 'playfair' | 'cormorant' | 'greatvibes' | 'sans' | 'amiri';
 }
 
 export interface Template {
