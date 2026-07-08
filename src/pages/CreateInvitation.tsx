@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useBuilderStore } from '../store/builderStore';
 import { useEventStore } from '../store/eventStore';
@@ -6,6 +6,7 @@ import { useTemplateStore } from '../store/templateStore';
 import { useNotificationStore } from '../store/notificationStore';
 import { InvitationScreenContent } from '../components/invitation/InvitationScreenContent';
 import { AUDIO_PRESETS } from '../components/invitation/InvitationScreenContent';
+import { getAudioUrl } from '../components/invitation/InvitationScreenContent';
 import { CloudinaryUploader } from '../components/CloudinaryUploader';
 import { mockGalleryImages } from '../mock/gallery';
 import Slider from '@mui/material/Slider';
@@ -25,8 +26,92 @@ import {
   Palette,
   MapPin,
   Users,
-  X
+  X,
+  Volume2,
+  VolumeX,
+  Play,
+  Pause
 } from 'lucide-react';
+
+const MusicPreviewPlayer: React.FC<{ musicUrl: string }> = ({ musicUrl }) => {
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [playing, setPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [duration, setDuration] = useState(0);
+
+  const resolvedUrl = getAudioUrl(musicUrl);
+
+  useEffect(() => {
+    if (!resolvedUrl) return;
+    const audio = new Audio(resolvedUrl);
+    audioRef.current = audio;
+    audio.addEventListener('timeupdate', () => {
+      setProgress(audio.currentTime);
+      setDuration(audio.duration || 0);
+    });
+    audio.addEventListener('ended', () => setPlaying(false));
+    return () => { audio.pause(); audioRef.current = null; };
+  }, [resolvedUrl]);
+
+  const togglePlay = () => {
+    if (!audioRef.current) return;
+    if (playing) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play().catch(() => {});
+    }
+    setPlaying(!playing);
+  };
+
+  const seek = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!audioRef.current || !duration) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const pct = (e.clientX - rect.left) / rect.width;
+    audioRef.current.currentTime = pct * duration;
+  };
+
+  const formatTime = (s: number) => {
+    if (!s || !isFinite(s)) return '0:00';
+    const m = Math.floor(s / 60);
+    const sec = Math.floor(s % 60);
+    return `${m}:${sec.toString().padStart(2, '0')}`;
+  };
+
+  if (!resolvedUrl) return null;
+
+  const presetName = AUDIO_PRESETS.find(p => p.id === musicUrl)?.name || 'Custom Audio';
+
+  return (
+    <div className="p-4 rounded-2xl bg-gradient-to-r from-rose-50 to-amber-50 dark:from-rose-950/20 dark:to-amber-950/20 border border-rose-200/50 dark:border-rose-900/30">
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          onClick={togglePlay}
+          className="w-10 h-10 rounded-full bg-gradient-to-br from-rose-500 to-amber-500 text-white flex items-center justify-center shadow-md hover:scale-105 transition-transform flex-shrink-0"
+        >
+          {playing ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
+        </button>
+        <div className="flex-1 min-w-0">
+          <p className="text-[10px] font-bold text-slate-500 truncate">{presetName}</p>
+          <div className="flex items-center gap-2 mt-1">
+            <span className="text-[9px] text-slate-400 font-mono">{formatTime(progress)}</span>
+            <div
+              onClick={seek}
+              className="flex-1 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full cursor-pointer overflow-hidden"
+            >
+              <div
+                className="h-full bg-gradient-to-r from-rose-500 to-amber-500 rounded-full transition-all"
+                style={{ width: duration ? `${(progress / duration) * 100}%` : '0%' }}
+              />
+            </div>
+            <span className="text-[9px] text-slate-400 font-mono">{formatTime(duration)}</span>
+          </div>
+        </div>
+        <Volume2 className="w-4 h-4 text-rose-400 flex-shrink-0" />
+      </div>
+    </div>
+  );
+};
 
 const getDefaultMusicForCategory = (catId: string): string => {
   if (catId === 'cat-2') return 'happy-birthday-party';
@@ -729,45 +814,120 @@ export const CreateInvitation: React.FC = () => {
                       <option value="sans">Inter Sans-Serif (Minimalist)</option>
                     </select>
                   </div>
-                  {/* Background Waltz Music */}
-                  <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">
-                      Background Music Track
-                    </label>
-                    <select
-                      value={invitationData.musicUrl}
-                      onChange={(e) => updateInvitationData({ musicUrl: e.target.value })}
-                      className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-sm focus:outline-none"
-                    >
-                      {AUDIO_PRESETS.map((p) => (
-                        <option key={p.id} value={p.id}>{p.name}</option>
-                      ))}
-                      <option value="none">No Audio Theme</option>
-                      {invitationData.musicUrl.startsWith('http') && (
-                        <option value={invitationData.musicUrl}>Custom Uploaded Audio</option>
-                      )}
-                    </select>
-                  </div>
+                  {/* ── Background Music Section ─────────────────────────────── */}
+                  <div className="space-y-4">
+                    <div className="space-y-1">
+                      <h4 className="text-sm font-bold font-playfair">Background Music</h4>
+                      <p className="text-[10px] text-slate-400">Upload your own music or pick from presets</p>
+                    </div>
 
-                  {/* Upload Custom Sound */}
-                  <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">
-                      Or Upload Your Own Background Music
-                    </label>
-                    <CloudinaryUploader
-                      accept="audio/*"
-                      label="Upload MP3 / Audio"
-                      hint="MP3, OGG, WAV · max 10MB · stored on Cloudinary"
-                      onUploaded={(url) => {
-                        updateInvitationData({ musicUrl: url });
-                        addToast('Custom audio uploaded & selected!', 'success');
-                      }}
-                    />
-                    {invitationData.musicUrl.startsWith('http') && (
-                      <p className="mt-1.5 text-[10px] text-emerald-600 font-semibold flex items-center gap-1">
-                        <CheckCircle2 className="w-3.5 h-3.5" /> Custom audio selected
-                      </p>
+                    {/* ── Upload Your Own Music (PRIMARY) ──────────────────────── */}
+                    <div className={`p-5 rounded-2xl border-2 border-dashed transition-all ${
+                      invitationData.musicUrl.startsWith('http')
+                        ? 'border-emerald-400 bg-emerald-50/50 dark:bg-emerald-950/10'
+                        : 'border-rose-300 dark:border-rose-800 bg-rose-50/30 dark:bg-rose-950/10'
+                    }`}>
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                          invitationData.musicUrl.startsWith('http')
+                            ? 'bg-emerald-500/10 text-emerald-500'
+                            : 'bg-rose-500/10 text-rose-500'
+                        }`}>
+                          <Music className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <span className="text-xs font-bold block">Upload Your Own Music</span>
+                          <span className="text-[9px] text-slate-400">MP3, OGG, WAV · Max 10MB · Stored on Cloudinary</span>
+                        </div>
+                      </div>
+                      <CloudinaryUploader
+                        accept="audio/*"
+                        label="Drop your music file here"
+                        hint="Click or drag to upload your custom song"
+                        onUploaded={(url) => {
+                          updateInvitationData({ musicUrl: url });
+                          addToast('Custom audio uploaded & selected!', 'success');
+                        }}
+                      />
+                      {invitationData.musicUrl.startsWith('http') && (
+                        <div className="mt-3 flex items-center gap-3">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                          <span className="text-[10px] text-emerald-600 font-semibold">Custom audio selected & ready to play!</span>
+                          <button
+                            type="button"
+                            onClick={() => updateInvitationData({ musicUrl: 'romantic-acoustic-wedding-waltz' })}
+                            className="ml-auto text-[9px] font-bold text-rose-500 hover:text-rose-600 underline"
+                          >
+                            Remove & use preset
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* ── Audio Preview Player ─────────────────────────────────── */}
+                    {invitationData.musicUrl && invitationData.musicUrl !== 'none' && (
+                      <MusicPreviewPlayer musicUrl={invitationData.musicUrl} />
                     )}
+
+                    {/* ── Divider ─────────────────────────────────────────────── */}
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1 h-px bg-slate-200 dark:bg-slate-800" />
+                      <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400">or choose a preset</span>
+                      <div className="flex-1 h-px bg-slate-200 dark:bg-slate-800" />
+                    </div>
+
+                    {/* ── Preset Music Grid ───────────────────────────────────── */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {AUDIO_PRESETS.map((preset) => {
+                        const isSelected = invitationData.musicUrl === preset.id;
+                        return (
+                          <button
+                            key={preset.id}
+                            type="button"
+                            onClick={() => updateInvitationData({ musicUrl: preset.id })}
+                            className={`flex items-center gap-3 p-3 rounded-xl border text-left transition-all ${
+                              isSelected
+                                ? 'border-rose-400 bg-rose-50 dark:bg-rose-950/20 shadow-sm'
+                                : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-900/50'
+                            }`}
+                          >
+                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                              isSelected ? 'bg-rose-500 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
+                            }`}>
+                              <Music className="w-3.5 h-3.5" />
+                            </div>
+                            <span className={`text-[11px] font-semibold truncate ${
+                              isSelected ? 'text-rose-700 dark:text-rose-300' : 'text-slate-600 dark:text-slate-300'
+                            }`}>
+                              {preset.name}
+                            </span>
+                            {isSelected && <CheckCircle2 className="w-3.5 h-3.5 text-rose-500 ml-auto flex-shrink-0" />}
+                          </button>
+                        );
+                      })}
+                      {/* No Audio option */}
+                      <button
+                        type="button"
+                        onClick={() => updateInvitationData({ musicUrl: 'none' })}
+                        className={`flex items-center gap-3 p-3 rounded-xl border text-left transition-all ${
+                          invitationData.musicUrl === 'none'
+                            ? 'border-slate-400 bg-slate-100 dark:bg-slate-800 shadow-sm'
+                            : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
+                        }`}
+                      >
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                          invitationData.musicUrl === 'none' ? 'bg-slate-500 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
+                        }`}>
+                          <VolumeX className="w-3.5 h-3.5" />
+                        </div>
+                        <span className={`text-[11px] font-semibold ${
+                          invitationData.musicUrl === 'none' ? 'text-slate-700 dark:text-slate-200' : 'text-slate-600 dark:text-slate-300'
+                        }`}>
+                          No Audio (Silent)
+                        </span>
+                        {invitationData.musicUrl === 'none' && <CheckCircle2 className="w-3.5 h-3.5 text-slate-500 ml-auto flex-shrink-0" />}
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
