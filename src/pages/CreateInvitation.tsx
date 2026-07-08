@@ -60,6 +60,9 @@ export const CreateInvitation: React.FC = () => {
     updateInvitationData,
     updateBrideDetails,
     updateGroomDetails,
+    addLoveStoryMilestone,
+    updateLoveStoryMilestone,
+    removeLoveStoryMilestone,
     isMobilePreviewOpen,
     setMobilePreview,
     resetBuilder
@@ -392,6 +395,53 @@ export const CreateInvitation: React.FC = () => {
                         currentUrl={invitationData.groom.avatar}
                         onUploaded={(url) => updateGroomDetails({ avatar: url })}
                       />
+                    </div>
+                  </div>
+
+                  {/* Love Story Timeline Editor */}
+                  <div className="space-y-4 p-4 border border-amber-500/20 rounded-2xl bg-amber-50/30 dark:bg-amber-900/5">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest flex items-center gap-1.5">
+                        <span>💛</span> Love Story Timeline
+                      </h4>
+                      <button
+                        type="button"
+                        onClick={addLoveStoryMilestone}
+                        className="flex items-center gap-1 text-[10px] font-bold px-3 py-1.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 transition-colors"
+                      >
+                        <Plus className="w-3 h-3" /> Add Milestone
+                      </button>
+                    </div>
+                    <div className="space-y-3">
+                      {(invitationData.loveStory || []).map((milestone) => (
+                        <div key={milestone.id} className="p-3 bg-white dark:bg-slate-900 rounded-xl border border-slate-200/60 dark:border-slate-800/40 space-y-2 relative group">
+                          <button
+                            type="button"
+                            onClick={() => removeLoveStoryMilestone(milestone.id)}
+                            className="absolute top-2 right-2 w-5 h-5 rounded-full bg-rose-500/10 text-rose-500 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-rose-500/20"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                          <div className="grid grid-cols-2 gap-2">
+                            <div>
+                              <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">Icon / Emoji</label>
+                              <input type="text" value={milestone.icon} onChange={(e) => updateLoveStoryMilestone(milestone.id, { icon: e.target.value })} className="w-full px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm focus:outline-none" maxLength={4} />
+                            </div>
+                            <div>
+                              <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">Date / Year</label>
+                              <input type="text" placeholder="e.g. Spring 2024" value={milestone.date} onChange={(e) => updateLoveStoryMilestone(milestone.id, { date: e.target.value })} className="w-full px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm focus:outline-none" />
+                            </div>
+                          </div>
+                          <div>
+                            <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">Title</label>
+                            <input type="text" placeholder="e.g. How We Met" value={milestone.title} onChange={(e) => updateLoveStoryMilestone(milestone.id, { title: e.target.value })} className="w-full px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm focus:outline-none" />
+                          </div>
+                          <div>
+                            <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">Description</label>
+                            <textarea rows={2} placeholder="Describe this milestone..." value={milestone.description} onChange={(e) => updateLoveStoryMilestone(milestone.id, { description: e.target.value })} className="w-full px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm focus:outline-none resize-none" />
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>

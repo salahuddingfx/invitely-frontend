@@ -16,6 +16,7 @@ export interface Template {
   previewImage: string;
   bgImage: string;
   isPremium: boolean;
+  isVip?: boolean;
   theme: TemplateTheme;
 }
 
@@ -30,6 +31,7 @@ export const mockTemplates: Template[] = [
     previewImage: '/placeholder-template.svg',
     bgImage: '/placeholder-template.svg',
     isPremium: true,
+    isVip: true,
     theme: {
       primaryColor: '#d4af37', // Luxury Gold
       secondaryColor: '#1e293b',
@@ -84,6 +86,7 @@ export const mockTemplates: Template[] = [
     previewImage: '/placeholder-template.svg',
     bgImage: '/placeholder-template.svg',
     isPremium: true,
+    isVip: true,
     theme: {
       primaryColor: '#d4af37', // Royal Gold
       secondaryColor: '#065f46', // Emerald
@@ -102,6 +105,7 @@ export const mockTemplates: Template[] = [
     previewImage: '/placeholder-template.svg',
     bgImage: '/placeholder-template.svg',
     isPremium: true,
+    isVip: true,
     theme: {
       primaryColor: '#d4af37', // Royal Gold
       secondaryColor: '#312e81', // Indigo

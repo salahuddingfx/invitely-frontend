@@ -146,33 +146,15 @@ export const WeddingLayout: React.FC<WeddingLayoutProps> = ({
     setTimeout(() => setCopiedText(null), 2000);
   };
 
-  // Default timeline milestones
-  const defaultMilestones = [
-    {
-      title: 'How We Met',
-      date: 'Autumn 2023',
-      description: `A chance encounter that turned into endless conversations, laughter, and a spark that couldn't be ignored.`,
-      icon: '✨'
-    },
-    {
-      title: 'First Date',
-      date: 'December 2023',
-      description: `A quiet coffee afternoon that stretched into dinner. We lost track of time and knew it was something special.`,
-      icon: '☕'
-    },
-    {
-      title: 'The Proposal',
-      date: 'Spring 2025',
-      description: `Under a beautiful sunset canopy, with hearts beating fast, he asked and she joyfully said "Yes" to forever.`,
-      icon: '💍'
-    },
-    {
-      title: 'The Big Day',
-      date: new Date(invitation.eventDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
-      description: `The start of our absolute forever. We are thrilled to celebrate our love and marriage vows with you.`,
-      icon: '🏰'
-    }
-  ];
+  // Default milestones used only as fallback when loveStory is not provided
+  const displayMilestones = (invitation.loveStory && invitation.loveStory.length > 0)
+    ? invitation.loveStory
+    : [
+        { id: 'ms-1', title: 'How We Met', date: 'Autumn 2023', description: `A chance encounter that turned into endless conversations, laughter, and a spark that couldn't be ignored.`, icon: '✨' },
+        { id: 'ms-2', title: 'First Date', date: 'December 2023', description: `A quiet coffee afternoon that stretched into dinner. We lost track of time and knew it was something special.`, icon: '☕' },
+        { id: 'ms-3', title: 'The Proposal', date: 'Spring 2025', description: `Under a beautiful sunset canopy, with hearts beating fast, he asked and she joyfully said "Yes" to forever.`, icon: '💍' },
+        { id: 'ms-4', title: 'The Big Day', date: new Date(invitation.eventDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }), description: `The start of our absolute forever. We are thrilled to celebrate our love and marriage vows with you.`, icon: '🏰' }
+      ];
 
   // Default Event Schedule (Nikkah/Mehndi specific details to look extremely complete)
   const defaultSchedule = isIslamic
@@ -612,8 +594,8 @@ export const WeddingLayout: React.FC<WeddingLayoutProps> = ({
 
             {/* Vertical Milestones */}
             <div className="relative border-l-2 border-dashed border-amber-500/20 pl-6 space-y-8 text-left max-w-md mx-auto">
-              {defaultMilestones.map((stone, idx) => (
-                <div key={idx} className="relative">
+              {displayMilestones.map((stone, idx) => (
+                <div key={stone.id || idx} className="relative">
                   {/* Timeline Bullet Node */}
                   <span 
                     className="absolute -left-[37px] top-1.5 w-6 h-6 rounded-full border-2 border-white dark:border-slate-950 flex items-center justify-center text-xs shadow-md"
